@@ -1,4 +1,4 @@
-# poverty_social_inequality
+# Poverty and Social Inequality in Montreal Neighborhoods according to 2016 Census
 Analysis of poverty and social inequality in Montreal according to Canadian 2016 census 
 
 

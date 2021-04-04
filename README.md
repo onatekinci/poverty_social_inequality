@@ -5,4 +5,6 @@ Analysis of poverty and social inequality in Montreal according to Canadian 2016
 R markdown file on social housing in Montréal (In English), the end result can be found under:
 https://onatekinci.github.io/poverty_social_inequality/
 
+![alt text]
+
 

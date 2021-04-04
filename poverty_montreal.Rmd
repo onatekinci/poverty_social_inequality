@@ -1,0 +1,229 @@
+---
+title: "Poverty and Social Inequality in Montreal Neighboorhoods according to 2016 Census"
+author: "Onat Ekinci"
+date: "Mars 20, 2021"
+output:  
+  html_document:
+    keep_md: true
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+  bibliography: bibliography.json    
+---
+ 
+
+```{r, echo = FALSE, message= FALSE, warning= FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	cache = FALSE
+)
+library(tidyverse)
+library(cansim)
+library(cancensus)
+library(cancensusHelpers)
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(leaflet)
+
+```
+An exploratory analysis on poverty and social inequality in Montreal neighborhoods. Tidyverse, Leaflet, SF, Cansim and Cancensus are the main packages used in the analysis. 
+
+
+#### SENIORS(65+) IN POVERTY (LICO-AT)
+
+
+Low-income Cut-offs (LICOs) refer to an income threshold, below which economic families or persons would likely have spent a larger share of their income than average on the necessities of food, shelter and clothing[1]. More specifically, the thresholds represented income levels at which these families or persons were expected to spend 20 percentage points or more of their income than average on food, shelter and clothing.
+
+There are two LICO income concepts:
+The LICOs before-tax (LICO-BT) use total income while the LICOs after-tax (LICO-AT) use after-tax income.
+
+The LICO-BT are based on the 1992 Family Expenditure Survey, which estimated that families spent 35% of total income on average on necessities of food, clothing and shelter. The LICO-BT thresholds were thus set to income levels where 55% of total income would be spent on these necessities. For the LICO-AT, it was estimated that families spent 43% of their after-tax income on average on necessities of food, clothing and shelter. The LICO-AT thresholds were thus set to income levels where 63% of after-tax income would be spent on these necessities.
+
+
+LICO is the most established measure of poverty in Canada. It is the main poverty measure used by the federal government and is the most widely-used measure in general across Canada [2].
+
+In the census LICO-AT values are represented as percentage values for [census tracts](https://www150.statcan.gc.ca/n1/pub/92-195-x/2011001/geo/ct-sr/def-eng.htm).
+
+
+```{r, echo=TRUE}
+mtl_lico_at_65<-get_census("CA16",regions=list(CSD="2466023"),vectors=c(lico_at="v_CA16_2582"), geo_format="sf",level="CT") 
+head(mtl_lico_at_65)
+```
+
+
+```{r, echo = FALSE}
+mean_mtl_lico_at_65 <-mean(mtl_lico_at_65$lico_at, na.rm = TRUE)
+max_mtl_lico_at_65 <-max(mtl_lico_at_65$lico_at, na.rm = TRUE)
+min_mtl_lico_at_65 <-min(mtl_lico_at_65$lico_at, na.rm = TRUE)
+```
+
+Mean percentage value for seniors lico-at:
+```{r}
+mean_mtl_lico_at_65
+```
+
+Max percentage value for seniors lico-at:
+```{r}
+max_mtl_lico_at_65 
+```
+
+Min percentage value for seniors lico-at:
+```{r}
+min_mtl_lico_at_65
+```
+
+
+```{r}
+bins <-c(0.2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65)
+pal <- colorBin("RdYlBu", domain = mtl_lico_at_65$lico_at, bins = bins, reverse = TRUE)
+
+leaflet(mtl_lico_at_65, height=800, width=1000) %>% 
+  addProviderTiles("CartoDB.Positron") %>% 
+  addPolygons(fillColor = ~pal(lico_at),
+              color = "white",
+              weight = 1,
+              opacity = 1,
+              fillOpacity = 0.65) %>%
+  addLegend(pal = pal, values = ~density, opacity = 0.7, title = NULL,
+            position = "bottomright")
+```
+
+
+
+#### SENIORS(65+) IN POVERTY (LIM-AT)
+
+The concept underlying the LIM is that all persons in a household have low income if their adjusted household income falls below half of the median adjusted income. The household income is adjusted by an equivalence scale to take economies of scale into account. 
+
+The LIM-AT is more an indicator of social inequality rather than that of poverty since it is a comparison. While LICO is Canada specific, LIM is used across all OECD countries. 
+
+```{r, echo = TRUE}
+mtl_lim_at_65<-get_census("CA16",regions=list(CSD="2466023"),vectors=c(lim_at="v_CA16_2552"), geo_format="sf",level="CT") 
+```
+
+
+
+```{r, echo = FALSE}
+mean_mtl_lim_at_65 <-mean(mtl_lim_at_65$lim_at, na.rm = TRUE)
+max_mtl_lim_at_65 <-max(mtl_lim_at_65$lim_at, na.rm = TRUE)
+min_mtl_lim_at_65 <-min(mtl_lim_at_65$lim_at, na.rm = TRUE)
+```
+
+Mean percentage value for seniors lim-at:
+```{r}
+mean_mtl_lim_at_65
+```
+
+Max percentage value for seniors lim-at:
+```{r}
+max_mtl_lim_at_65 
+```
+
+Min percentage value for seniors lim-at:
+```{r}
+min_mtl_lim_at_65
+```
+
+
+
+```{r}
+bins <-c(0.2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70)
+pal <- colorBin("RdYlBu", domain = mtl_lim_at_65$lim_at, bins = bins, reverse = TRUE)
+
+leaflet(mtl_lim_at_65, height=800, width=1000) %>% 
+  addProviderTiles("CartoDB.Positron") %>% 
+  addPolygons(fillColor = ~pal(lim_at),
+              color = "white",
+              weight = 1,
+              opacity = 1,
+              fillOpacity = 0.65) %>%
+  addLegend(pal = pal, values = ~density, opacity = 0.7, title = NULL,
+            position = "bottomright")
+```
+
+
+#### CHILDREN(17<) IN POVERTY (LICO-AT)
+
+
+```{r, echo = TRUE}
+mtl<-get_census("CA16",regions=list(CSD="2466023"),geo_format="sf",level="CT") 
+mtl_lico_at_17<-get_census("CA16",regions=list(CSD="2466023"),vectors=c(lico_at="v_CA16_2573"), geo_format="sf",level="CT") 
+head(mtl_lico_at_17)
+
+
+mean_mtl_lico_at_17 <-mean(mtl_lico_at_17$lico_at, na.rm = TRUE)
+max_mtl_lico_at_17 <-max(mtl_lico_at_17$lico_at, na.rm = TRUE)
+min_mtl_lico_at_17 <-min(mtl_lico_at_17$lico_at, na.rm = TRUE)
+
+mean_mtl_lico_at_17
+max_mtl_lico_at_17 
+min_mtl_lico_at_17
+```
+
+
+
+
+```{r }
+bins <-c(0.2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 57)
+
+pal <- colorBin("RdYlBu", domain = mtl_lico_at_17$lico_at, bins = bins, reverse = TRUE)
+
+
+leaflet(mtl_lico_at_17, height=800, width=1000) %>% 
+  addProviderTiles("CartoDB.Positron") %>% 
+  addPolygons(fillColor = ~pal(lico_at),
+              color = "white",
+              weight = 1,
+              opacity = 1,
+              fillOpacity = 0.65) %>%
+  addLegend(pal = pal, values = ~density, opacity = 0.7, title = NULL,
+            position = "bottomright")
+```
+
+
+
+#### CHILDREN(17<) IN POVERTY (LIM-AT)
+
+
+```{r, echo = TRUE}
+mtl<-get_census("CA16",regions=list(CSD="2466023"),geo_format="sf",level="CT") 
+mtl_lim_at_17<-get_census("CA16",regions=list(CSD="2466023"),vectors=c(lim_at="v_CA16_2543"), geo_format="sf",level="CT") 
+head(mtl_lim_at_17)
+
+
+mean_mtl_lim_at_17 <-mean(mtl_lim_at_17$lim_at, na.rm = TRUE)
+max_mtl_lim_at_17 <-max(mtl_lim_at_17$lim_at, na.rm = TRUE)
+min_mtl_lim_at_17 <-min(mtl_lim_at_17$lim_at, na.rm = TRUE)
+
+mean_mtl_lim_at_17
+max_mtl_lim_at_17 
+min_mtl_lim_at_17
+```
+
+
+```{r }
+bins <-c(0.2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 72)
+
+pal <- colorBin("RdYlBu", domain = mtl_lico_at_17$lico_at, bins = bins, reverse = TRUE)
+
+
+leaflet(mtl_lim_at_17, height=800, width=1000) %>% 
+  addProviderTiles("CartoDB.Positron") %>% 
+  addPolygons(fillColor = ~pal(lim_at),
+              color = "white",
+              weight = 1,
+              opacity = 1,
+              fillOpacity = 0.65) %>%
+  addLegend(pal = pal, values = ~density, opacity = 0.7, title = NULL,
+            position = "bottomright")
+```
+
+
+
+### REFERENCES:
+
+1. Low income definitions, [Statistics Canada](https://www150.statcan.gc.ca/n1/pub/75f0011x/2012001/notes/low-faible-eng.htm)
+2. How do we measure poverty? Hannah Aldridge, Maytree Foundation, 2017
+

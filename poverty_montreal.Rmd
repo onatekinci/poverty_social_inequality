@@ -1,5 +1,5 @@
 ---
-title: "Poverty and Social Inequality in Montreal Neighboorhoods according to 2016 Census"
+title: "Poverty and Social Inequality in Montreal Neighbourhoods according to 2016 Canada Census"
 author: "Onat Ekinci"
 date: "Mars 20, 2021"
 output:  
@@ -29,7 +29,7 @@ library(ggplot2)
 library(leaflet)
 
 ```
-An exploratory analysis on poverty and social inequality in Montreal neighborhoods. Tidyverse, Leaflet, SF, Cansim and Cancensus are the main packages used in the analysis. 
+An exploratory analysis on poverty and social inequality in Montreal neighbourhoods. Tidyverse, Leaflet, SF, Cansim and Cancensus are the main packages used in the analysis. 
 
 
 #### SENIORS(65+) IN POVERTY (LICO-AT)

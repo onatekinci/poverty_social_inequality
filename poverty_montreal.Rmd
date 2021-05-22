@@ -47,6 +47,7 @@ LICO is the most established measure of poverty in Canada. It is the main povert
 
 In the census LICO-AT values are represented as percentage values for [census tracts](https://www150.statcan.gc.ca/n1/pub/92-195-x/2011001/geo/ct-sr/def-eng.htm).
 
+To create analyses for different geographic units you can go through the Wikipeadia page on [census geographic units of Canada](https://en.wikipedia.org/wiki/Census_geographic_units_of_Canada)
 
 ```{r, echo=TRUE}
 mtl_lico_at_65<-get_census("CA16",regions=list(CSD="2466023"),vectors=c(lico_at="v_CA16_2582"), geo_format="sf",level="CT") 
@@ -60,17 +61,17 @@ max_mtl_lico_at_65 <-max(mtl_lico_at_65$lico_at, na.rm = TRUE)
 min_mtl_lico_at_65 <-min(mtl_lico_at_65$lico_at, na.rm = TRUE)
 ```
 
-Mean percentage value for seniors lico-at:
+Mean percentage value for seniors living below lico-at:
 ```{r}
 mean_mtl_lico_at_65
 ```
 
-Max percentage value for seniors lico-at:
+Maximum percentage of seniors living below lico-at in a region:
 ```{r}
 max_mtl_lico_at_65 
 ```
 
-Min percentage value for seniors lico-at:
+Minimum percentage of seniors living below lico-at in a region:
 ```{r}
 min_mtl_lico_at_65
 ```
@@ -100,7 +101,7 @@ The concept underlying the LIM is that all persons in a household have low incom
 The LIM-AT is more an indicator of social inequality rather than that of poverty since it is a comparison. While LICO is Canada specific, LIM is used across all OECD countries. 
 
 ```{r, echo = TRUE}
-mtl_lim_at_65<-get_census("CA16",regions=list(CSD="2466023"),vectors=c(lim_at="v_CA16_2552"), geo_format="sf",level="CT") 
+mtl_lim_at_65<-get_census("CA16",regions=list(CSD="2466023"),vectors=c(lim_at="v_CA16_2552"), geo_format="sf",level="DA") 
 ```
 
 
@@ -206,7 +207,7 @@ min_mtl_lim_at_17
 ```{r }
 bins <-c(0.2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 72)
 
-pal <- colorBin("RdYlBu", domain = mtl_lico_at_17$lico_at, bins = bins, reverse = TRUE)
+pal <- colorBin("RdYlBu", domain = mtl_lim_at_17$lim_at, bins = bins, reverse = TRUE)
 
 
 leaflet(mtl_lim_at_17, height=800, width=1000) %>% 
@@ -220,6 +221,38 @@ leaflet(mtl_lim_at_17, height=800, width=1000) %>%
             position = "bottomright")
 ```
 
+
+
+```{r, echo = TRUE}
+mtl<-get_census("CA16",regions=list(CSD="2466023"),geo_format="sf",level="CT") 
+dummy<-get_census("CA16",regions=list(CSD="2466023"),vectors=c(vec_int="v_CA16_2168"), geo_format="sf",level="CT") 
+head(dummy)
+
+
+mean_mtl_int <-mean(dummy$vec_int, na.rm = TRUE)
+max_mtl_int <-max(dummy$vec_int, na.rm = TRUE)
+min_mtl_int <-min(dummy$vec_int, na.rm = TRUE)
+
+mean_mtl_int
+max_mtl_int
+min_mtl_int
+```
+```{r }
+
+
+pal <- colorBin("RdYlBu", domain = dummy$vec_int)
+
+
+leaflet(dummy, height=800, width=1000) %>% 
+  addProviderTiles("CartoDB.Positron") %>% 
+  addPolygons(fillColor = ~pal(vec_int),
+              color = "white",
+              weight = 1,
+              opacity = 1,
+              fillOpacity = 0.65)  %>%
+  addLegend(pal = pal, values = ~vec_int, opacity = 0.7, title = NULL,
+            position = "bottomright")
+```
 
 
 ### REFERENCES:
